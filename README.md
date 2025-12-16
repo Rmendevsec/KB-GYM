@@ -12,15 +12,15 @@ The system replaces manual and informal tracking methods with a centralized digi
 
 KB GYM experienced ongoing challenges in managing its members due to the absence of a proper management system. Specifically:
 
-Inability to clearly identify members who have paid versus those who have not
+- Inability to clearly identify members who have paid versus those who have not
 
-No structured way to track membership validity or expiration
+- No structured way to track membership validity or expiration
 
-Manual follow-ups for payments, leading to missed revenue
+- Manual follow-ups for payments, leading to missed revenue
 
-Lack of attendance tracking
+- Lack of attendance tracking
 
-No reporting system to support business decisions
+- No reporting system to support business decisions
 
 These issues resulted in inefficiencies, poor visibility into gym operations, and unnecessary administrative workload.
 
@@ -30,11 +30,11 @@ To solve these challenges, I designed and developed a complete gym management sy
 
 The core idea of the system is to categorize every member based on their payment and membership status. Each member is automatically classified as:
 
-Active: membership is valid and payment is up to date
+- Active: membership is valid and payment is up to date
 
-Expired: membership period has ended
+- Expired: membership period has ended
 
-Frozen: membership is temporarily paused
+- Frozen: membership is temporarily paused
 
 This structured categorization gives gym administrators instant visibility into the status of all members and eliminates confusion around payments and access.
 
@@ -63,13 +63,13 @@ The system provides alerts for upcoming or overdue membership expirations, enabl
 
 Basic reports provide insights into:
 
-Total registered members
+- Total registered members
 
-Active versus expired memberships
+- Active versus expired memberships
 
-Payment summaries
+- Payment summaries
 
-Attendance trends
+- Attendance trends
 
 These reports support better operational and financial decisions.
 
@@ -81,27 +81,27 @@ A centralized admin dashboard provides full control over the system. It presents
 
 The KB GYM Management System delivers measurable improvements to daily gym operations:
 
-Clear and accurate tracking of member payments
+- Clear and accurate tracking of member payments
 
-Reduced manual errors and administrative workload
+- Reduced manual errors and administrative workload
 
-Improved financial visibility
+- Improved financial visibility
 
-Better member follow-up and retention
+- Better member follow-up and retention
 
-A scalable foundation for future enhancements
+- A scalable foundation for future enhancements
 
 ## Technology Stack
 
 The system is built using modern web technologies, including:
 
-Frontend: HTML, CSS, JavaScript / React
+- Frontend: HTML, CSS, JavaScript / React
 
-Backend: Node.js and Express
+- Backend: Node.js and Express
 
-Database: MongoDB or MySQL
+- Database: Sqlite
 
-Authentication: Secure admin access
+- Authentication: Secure admin access
 
 ## Use Case
 
