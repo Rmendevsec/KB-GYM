@@ -102,11 +102,3 @@ The system is built using modern web technologies, including:
 - Database: Sqlite
 
 - Authentication: Secure admin access
-
-## Use Case
-
-This system is suitable for small to medium-sized gyms, fitness centers, and personal training studios seeking an affordable and efficient management solution.
-
-## Conclusion
-
-The KB GYM Management System addresses real operational challenges by introducing structure, automation, and clarity into gym management. It transforms manual processes into a reliable digital system that supports growth, efficiency, and better decision-making.
