@@ -39,7 +39,7 @@ The core idea of the system is to categorize every member based on their payment
 This structured categorization gives gym administrators instant visibility into the status of all members and eliminates confusion around payments and access.
 
 ## System Features
-Member Registration
+### Member Registration
 
 The system allows administrators to register new members by capturing personal information, membership plans, and start dates. Existing member information can be updated easily as needed.
 
@@ -95,7 +95,7 @@ The KB GYM Management System delivers measurable improvements to daily gym opera
 
 The system is built using modern web technologies, including:
 
-- Frontend: HTML, CSS, JavaScript / React
+- Frontend:  React
 
 - Backend: Node.js and Express
 
