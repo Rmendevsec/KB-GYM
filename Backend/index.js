@@ -35,7 +35,7 @@ function authenticateToken(req,res, next){
     if (err) return res.sendStatus(403)
     req.user = user
     next()
-})
+})}
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`)
-})}
+})
