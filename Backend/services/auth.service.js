@@ -9,6 +9,7 @@ exports.register = async (data) =>{
     return user.create({
         email: data.email,
         password: hashedPassword,
-        fullname: data.fullname
+        fullname: data.fullname,
+        roleId : role.id
     })
 }
