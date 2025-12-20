@@ -1,10 +1,11 @@
 require("dotenv").config()
 const express = require("express")
 const app = express()
-
+const sequelize = require("./config/db.config")
 const PORT = 5000
 const jwt = require("jsonwebtoken")
 
+sequelize.sync().then(()=>console.log("DB is ready"))
 app.use(express.json())
 const posts = [{
     username: "rmen",
