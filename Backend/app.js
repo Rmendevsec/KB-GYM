@@ -4,6 +4,8 @@ const app = express();
 // Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const qrRoutes = require('./routes/qr.routes');
+
 
 // Middleware
 app.use(express.json());
@@ -12,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-
+app.use('/api/qr', qrRoutes);
 // Health check
 app.get("/", (req, res) => {
   res.json({

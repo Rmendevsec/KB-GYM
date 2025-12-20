@@ -34,7 +34,7 @@ const User = sequelize.define("User", {
   role_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 3, // Default to 'user' role (id=3)
+    defaultValue: 3,
     references: {
       model: 'Roles',
       key: 'id'
@@ -43,6 +43,10 @@ const User = sequelize.define("User", {
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  qrCode: {
+    type: DataTypes.TEXT, // store QR code as base64 string
+    allowNull: true
   }
 }, {
   tableName: 'users',
