@@ -9,7 +9,18 @@ exports.register = async (data) =>{
     return user.create({
         email: data.email,
         password: hashedPassword,
-        fullname: data.fullname,
+        fullName: data.fullName,
         roleId : role.id
     })
+}
+
+exports.login = async (email, password) =>{
+    const user =await user.findOne({where: {email}, include: role})
+
+    if(!user) throw new Error("Invalid credentials")
+    
+    const match = await passwordUtil.compare(password, user.password)
+    if(!match) throw new Error("Invalid credentials")
+    
+    return jwtUtil.sign({id: user.id, role: user.role.name})
 }
