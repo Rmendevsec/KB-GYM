@@ -1,7 +1,5 @@
-const conn = require("../config/db.config")
+const user = require("../models")
 
-const bcrypt = require("bcrypt")
-
-async function checkEmployeeExists(){
-    const query = sequelize
+exports.getMe = async (id)=>{
+    user.findByPk(id, {include: role})
 }
