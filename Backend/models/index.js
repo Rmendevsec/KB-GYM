@@ -1,11 +1,13 @@
-const sequelize = require("../config/db.config")
-const user = require("./user")
-const role = require("./role")
+const sequelize = require("../config/db.config");
+const User = require("./user");
+const Role = require("./role");
 
-role.hasMany(user)
-user.belongsTo(role)
+// Define associations
+Role.hasMany(User, { foreignKey: "role_id" });
+User.belongsTo(Role, { foreignKey: "role_id" });
+
 module.exports = {
-    sequelize, 
-    user,
-    role
-}
+  sequelize,
+  User,
+  Role
+};

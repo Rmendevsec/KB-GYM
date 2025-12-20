@@ -1,10 +1,95 @@
-GET http://localhost:5000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicm1lbiIsImlhdCI6MTc2NjE0MzI0M30.Stbj5w-ATuQCZkPS_65znqQTba037iWBkphJYHbKxdE
-###
+@baseUrl = http://localhost:5000
+@contentType = application/json
 
-POST http://localhost:5000/login
-Content-Type: application/json
+### 1. HEALTH CHECK
+GET {{baseUrl}}/
+Content-Type: {{contentType}}
+
+### 2. REGISTER ADMIN USER
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
 
 {
-    "username": "rmen"
+    "fullName": "Super Admin",
+    "email": "admin@gym.com",
+    "password": "admin123",
+    "role": "admin"
 }
+
+### 3. REGISTER CASHIER USER
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+    "fullName": "John Cashier",
+    "email": "cashier@gym.com",
+    "password": "cashier123",
+    "role": "cashier"
+}
+
+### 4. REGISTER REGULAR USER (default role)
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+    "fullName": "Regular Member",
+    "email": "member@gym.com",
+    "password": "member123"
+}
+
+### 5. LOGIN AS ADMIN
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "admin@gym.com",
+    "password": "admin123"
+}
+
+> {%
+    client.test("Admin login successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.success === true, "Success should be true");
+        client.assert(response.body.data.token, "Token should exist");
+        client.global.set("adminToken", response.body.data.token);
+        client.global.set("adminId", response.body.data.user.id);
+    });
+%}
+
+### 6. LOGIN AS CASHIER
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "cashier@gym.com",
+    "password": "cashier123"
+}
+
+> {%
+    client.test("Cashier login successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.success === true, "Success should be true");
+        client.assert(response.body.data.token, "Token should exist");
+        client.global.set("cashierToken", response.body.data.token);
+    });
+%}
+
+### 7. LOGIN AS REGULAR USER
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "member@gym.com",
+    "password": "member123"
+}
+
+> {%
+    client.test("Member login successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.success === true, "Success should be true");
+        client.assert(response.body.data.token, "Token should exist");
+        client.global.set("memberToken", response.body.data.token);
+        client.global.set("memberId", response.body.data.user.id);
+    });
+%}
+

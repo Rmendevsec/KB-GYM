@@ -1,26 +1,98 @@
-const {user, role, role} = require("../models")
-const passwordUtil = require("../utils/password")
-const jwtUtil = require("../utils/jwt")
+const { User, Role } = require("../models");
+const { hashPassword, comparePassword } = require("../utils/password");
+const { generateToken } = require("../utils/jwt");
 
-exports.register = async (data) =>{
-    const role = await role.findOne({where: {name: data.role || "user"}})
-    const hashedPassword = await passwordUtil.hash(data.password)
-    
-    return user.create({
-        email: data.email,
-        password: hashedPassword,
-        fullName: data.fullName,
-        roleId : role.id
-    })
-}
+const register = async (userData) => {
+  // Check if user already exists
+  const existingUser = await User.findOne({ where: { email: userData.email } });
+  if (existingUser) {
+    throw new Error("User with this email already exists");
+  }
 
-exports.login = async (email, password) =>{
-    const user =await user.findOne({where: {email}, include: role})
+  // Get role (default to 'user')
+  const role = await Role.findOne({ 
+    where: { name: userData.role || "user" } 
+  });
+  
+  if (!role) {
+    throw new Error("Role not found");
+  }
 
-    if(!user) throw new Error("Invalid credentials")
-    
-    const match = await passwordUtil.compare(password, user.password)
-    if(!match) throw new Error("Invalid credentials")
-    
-    return jwtUtil.sign({id: user.id, role: user.role.name})
-}
+  // Hash password
+  const hashedPassword = await hashPassword(userData.password);
+
+  // Create user
+  const user = await User.create({
+    full_name: userData.fullName,
+    email: userData.email,
+    password: hashedPassword,
+    role_id: role.id
+  });
+
+  // Generate token
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    role: role.name
+  });
+
+  return {
+    user: {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      role: role.name,
+      is_active: user.is_active
+    },
+    token
+  };
+};
+
+const login = async (email, password) => {
+  // Find user with role
+  const user = await User.scope('withPassword').findOne({
+    where: { email },
+    include: [{
+      model: Role,
+      attributes: ['name']
+    }]
+  });
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  // Check if user is active
+  if (!user.is_active) {
+    throw new Error("Account is deactivated");
+  }
+
+  // Verify password
+  const isPasswordValid = await comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+
+  // Generate token
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    role: user.Role.name
+  });
+
+  return {
+    user: {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      role: user.Role.name,
+      is_active: user.is_active
+    },
+    token
+  };
+};
+
+module.exports = {
+  register,
+  login
+};

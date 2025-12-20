@@ -1,7 +1,22 @@
-const jwt = require("jsonwebtoken")
-const {JWT_SECRETE} =require("../")
+const jwt = require("jsonwebtoken");
 
-exports.sign = (payload) => {
-    jwt.sign(payload, JWT_SECRETE, {expiresIn: "24h"})
-}
-exports.verify = (token) => jwt.verify(token, JWT_SECRETE)
+const generateToken = (payload) => {
+  return jwt.sign(
+    payload,
+    process.env.JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+};
+
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    throw new Error("Invalid or expired token");
+  }
+};
+
+module.exports = {
+  generateToken,
+  verifyToken
+};
