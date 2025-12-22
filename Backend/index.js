@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
     console.log("Database connection established successfully.");
     
     // Sync database (alter for dev, use migrations for prod)
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Database synchronized.");
     
     // Create default roles

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const cors = require("cors");
 // Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -10,6 +10,7 @@ const qrRoutes = require('./routes/qr.routes');
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors()); // allows any origin
 
 // Routes
 app.use("/api/auth", authRoutes);
