@@ -1,17 +1,24 @@
-// src/components/ProtectedRoute.jsx
-import { Navigate } from "react-router-dom";
+// ProtectedRoute.jsx
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function ProtectedRoute({ children, roles }) {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // store role as string: "admin", "cashier", "user"
+const ProtectedRoute = ({ children, roles = [] }) => {
+  const { user, isAuthenticated, loading } = useAuth();
 
-  if (!token) {
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles && !roles.includes(role)) {
-    return <Navigate to="/login" replace />;
+  // Check role authorization
+  if (roles.length > 0 && !roles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
-}
+};
+
+export default ProtectedRoute;

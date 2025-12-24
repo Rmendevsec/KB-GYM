@@ -1,0 +1,42 @@
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #6a040f; /* dark red */
+  color: #fff;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+td {
+  color: #555;
+}
+
+.status-yes {
+  color: green;
+  font-weight: bold;
+}
+
+.status-no {
+  color: red;
+  font-weight: bold;
+}

@@ -1,0 +1,140 @@
+.sidebar {
+  width: 250px;
+  background: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  color: #667eea;
+  font-size: 20px;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.sidebar-toggle:hover {
+  color: #764ba2;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 5px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: #f8f9fa;
+  color: #667eea;
+}
+
+.nav-link.active {
+  background-color: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border-left-color: #667eea;
+}
+
+.nav-icon {
+  font-size: 18px;
+  margin-right: 15px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar.collapsed .nav-icon {
+  margin-right: 0;
+  font-size: 20px;
+}
+
+.nav-label {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: opacity 0.3s;
+}
+
+.sidebar.collapsed .nav-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #28a745;
+}
+
+.status-indicator.active {
+  background-color: #28a745;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+  
+  .sidebar.collapsed {
+    width: 0;
+    overflow: hidden;
+  }
+  
+  .nav-label {
+    display: none;
+  }
+  
+  .sidebar:not(.collapsed) .nav-label {
+    display: block;
+  }
+  
+  .sidebar:not(.collapsed) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1001;
+    width: 250px;
+  }
+}

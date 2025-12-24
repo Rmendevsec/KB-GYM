@@ -1,95 +1,80 @@
-  const { User, Role } = require("../models");
-  const { hashPassword, comparePassword } = require("../utils/password");
-  const { generateToken } = require("../utils/jwt");
+const jwt = require('jsonwebtoken');
+const { User, Payment, Package } = require('../models');
 
-const register = async (userData) => {
-  const existingUser = await User.findOne({
-    where: { email: userData.email }
-  });
-  if (existingUser) {
-    throw new Error("User with this email already exists");
+class AuthService {
+  static async registerUser(userData, createdBy = null) {
+    const transaction = await sequelize.transaction();
+
+    try {
+      // Create user
+      const user = await User.create({
+        ...userData,
+        created_by: createdBy
+      }, { transaction });
+
+      // Create payment record
+      const payment = await Payment.create({
+        user_id: user.id,
+        package_id: userData.package_id,
+        confirmed: true,
+        confirmed_by: createdBy,
+        start_date: new Date()
+      }, { transaction });
+
+      await transaction.commit();
+
+      // Remove password from response
+      const userResponse = user.toJSON();
+      delete userResponse.password;
+
+      return { user: userResponse, payment };
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
-
-  if (!userData.full_name || !userData.email || !userData.password || !userData.role_id) {
-    throw new Error("All fields are required");
-  }
-
-  // Hash password
-  const hashedPassword = await hashPassword(userData.password);
-
-  // Create user 
-  const user = await User.create({
-    full_name: userData.full_name,   
-    email: userData.email,
-    password: hashedPassword,
-    role_id: userData.role_id        
-  });
-
-  const token = generateToken({
-    id: user.id,
-    email: user.email,
-    role_id: user.role_id
-  });
-
-  return {
-    user: {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      role_id: user.role_id,
-      is_active: user.is_active
-    },
-    token
-  };
-};
-
-
-  const login = async (email, password) => {
-    // Find user with role
-    const user = await User.scope('withPassword').findOne({
-      where: { email },
-      include: [{
-        model: Role,
-        attributes: ['name']
-      }]
-    });
+  static async login(email, password) {
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error("Invalid email or password");
+      throw new Error('Invalid credentials');
     }
 
-    // Check if user is active
-    if (!user.is_active) {
-      throw new Error("Account is deactivated");
+    // Check if account is locked
+    if (user.isLocked()) {
+      const lockoutTime = Math.ceil((user.lockout_until - new Date()) / 60000);
+      throw new Error(`Account locked. Try again in ${lockoutTime} minutes.`);
     }
 
-    // Verify password
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid email or password");
+    // Validate password
+    const isValidPassword = await user.validatePassword(password);
+    
+    if (!isValidPassword) {
+      await user.incrementLoginAttempts();
+      throw new Error('Invalid credentials');
     }
 
-    // Generate token
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.Role.name
-    });
+    // Reset login attempts on successful login
+    await user.resetLoginAttempts();
 
-    return {
-      user: {
-        id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        role: user.Role.name,
-        is_active: user.is_active
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        role: user.role,
+        email: user.email
       },
-      token
-    };
-  };
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE || '24h' }
+    );
 
-  module.exports = {
-    register,
-    login
-  };
+    // Remove sensitive data
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    return { user: userResponse, token };
+  }
+}
+
+module.exports = AuthService;
