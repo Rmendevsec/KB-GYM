@@ -1,23 +1,12 @@
-const bcrypt = require("bcrypt");
+  const bcrypt = require("bcrypt");
 
-const hashPassword = async (password) => {
-  try {
-    const saltRounds = 10;
-    return await bcrypt.hash(password, saltRounds);
-  } catch (error) {
-    throw new Error("Error hashing password");
-  }
-};
+  const hashPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  };
 
-const comparePassword = async (password, hash) => {
-  try {
-    return await bcrypt.compare(password, hash);
-  } catch (error) {
-    throw new Error("Error comparing passwords");
-  }
-};
+  const comparePassword = async (plainPassword, hashedPassword) => {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  };
 
-module.exports = {
-  hashPassword,
-  comparePassword
-};
+  module.exports = { hashPassword, comparePassword };

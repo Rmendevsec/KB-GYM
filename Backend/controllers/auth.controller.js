@@ -1,43 +1,43 @@
 const authService = require("../services/auth.service");
 
-const register = async (req, res, next) => {
+const registerController = async (req, res) => {
   try {
     const result = await authService.register(req.body);
-    
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      data: result
-    });
-  } catch (error) {
-    next(error);
+    res.status(201).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
   }
 };
 
-const login = async (req, res, next) => {
+const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required"
-      });
+      return res.status(400).json({ message: "Email and password are required" });
     }
 
     const result = await authService.login(email, password);
-    
+
+    // Make sure result has user and token
+    if (!result || !result.user || !result.token) {
+      return res.status(400).json({ message: "Login failed" });
+    }
+
+    // Send a single response
     res.json({
       success: true,
-      message: "Login successful",
-      data: result
+      user: result.user,
+      token: result.token,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    console.error(err);
+    // Only one response per request
+    if (!res.headersSent) {
+      res.status(400).json({ message: err.message });
+    }
   }
 };
 
-module.exports = {
-  register,
-  login
-};
+module.exports = { registerController, loginController };

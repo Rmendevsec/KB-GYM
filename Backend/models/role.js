@@ -10,18 +10,14 @@ const Role = sequelize.define("Role", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
-    validate: {
-      notEmpty: true,
-      isIn: [['admin', 'cashier', 'user']]
-    }
+    unique: true
   },
   description: {
     type: DataTypes.STRING,
     allowNull: true
   }
 }, {
-  tableName: 'roles',
+  tableName: "roles",
   timestamps: true
 });
 

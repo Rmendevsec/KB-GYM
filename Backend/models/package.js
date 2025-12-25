@@ -1,14 +1,12 @@
-// models/package.js
-module.exports = (sequelize, DataTypes) => {
-  const Package = sequelize.define("Package", {
-    name: { type: DataTypes.STRING, allowNull: false },
-    duration_days: { type: DataTypes.INTEGER, allowNull: false },
-    price: { type: DataTypes.INTEGER, allowNull: false },
-  });
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/db.config");
 
-  Package.associate = (models) => {
-    Package.hasMany(models.Payment, { foreignKey: "package_id" });
-  };
+const Package = sequelize.define("Package", {
+  name: { type: DataTypes.STRING, allowNull: false },
+  duration_days: { type: DataTypes.INTEGER, allowNull: false },
+  price: { type: DataTypes.INTEGER, allowNull: false },
+  session_per_week: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 5 }, // <- add this
+});
 
-  return Package;
-};
+
+module.exports = Package;

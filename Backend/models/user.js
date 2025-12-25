@@ -1,46 +1,49 @@
+const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db.config");
 
-// First, import all models
-const User = require("./user");
-const Role = require("./role");
-const Scan = require("./scan");
-const Payment = require("./payment");
-const Package = require("./package");
+const User = sequelize.define("User", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  full_name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  role_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 3
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  qrCode: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  }
+}, {
+  tableName: "users",
+  timestamps: true,
+  defaultScope: {
+    attributes: { exclude: ["password"] }
+  },
+  scopes: {
+    withPassword: {
+      attributes: { include: ["password"] }
+    }
+  }
+});
 
-// Store all models in an object
-const models = {
-  User,
-  Role,
-  Scan,
-  Payment,
-  Package
-};
-
-/* =======================
-   ROLE ↔ USER
-======================= */
-Role.hasMany(User, { foreignKey: "role_id" });
-User.belongsTo(Role, { foreignKey: "role_id" });
-
-/* =======================
-   USER ↔ SCAN
-======================= */
-User.hasMany(Scan, { foreignKey: "user_id" });
-Scan.belongsTo(User, { foreignKey: "user_id" });
-
-/* =======================
-   USER ↔ PAYMENT
-======================= */
-User.hasMany(Payment, { foreignKey: "user_id" });
-Payment.belongsTo(User, { foreignKey: "user_id" });
-
-/* =======================
-   PACKAGE ↔ PAYMENT
-======================= */
-Package.hasMany(Payment, { foreignKey: "package_id" });
-Payment.belongsTo(Package, { foreignKey: "package_id" });
-
-module.exports = {
-  sequelize,
-  ...models
-};
+module.exports = User;

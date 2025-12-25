@@ -22,18 +22,14 @@ const totalAmount =selectedPackage.months * selectedPackage.price;
 
   const createUser = async () => {
     try {
-await axios.post(
-  "http://localhost:5000/api/auth/register",
-  {
-    ...form,
-    amount: totalAmount,
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  }
-);
+await axios.post("http://localhost:5000/api/auth/register", {
+  full_name: form.full_name,
+  email: form.email,
+  password: form.password,
+  role_id: form.role_id,
+  package_id: Number(form.packageMonths), // must match packages table id
+});
+
 
 
     alert("User created successfully");

@@ -1,9 +1,8 @@
-// src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children, roles }) {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // store role as string: "admin", "cashier", "user"
+  const role = localStorage.getItem("role"); // "admin", "cashier", "user"
 
   if (!token) {
     return <Navigate to="/login" replace />;
