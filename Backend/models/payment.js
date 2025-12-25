@@ -1,27 +1,18 @@
-const {DataTypes} = require("sequelize")
-const sequelize = require("../config/db.config")
-const User = require("./user")
-const Package = require("./package")
+// models/payment.js
+module.exports = (sequelize, DataTypes) => {
+  const Payment = sequelize.define("Payment", {
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
+    package_id: { type: DataTypes.INTEGER, allowNull: false },
+    paid_at: { type: DataTypes.DATE, allowNull: false },
+    expire_at: { type: DataTypes.DATE, allowNull: false },
+    allowed_scans: { type: DataTypes.INTEGER, allowNull: false },
+    is_confirmed: { type: DataTypes.BOOLEAN, defaultValue: false },
+  });
 
+  Payment.associate = (models) => {
+    Payment.belongsTo(models.User, { foreignKey: "user_id" });
+    Payment.belongsTo(models.Package, { foreignKey: "package_id" });
+  };
 
-const Payment = new sequelize.define("Payment",{
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    user_id: {type: DataTypes.STRING, allowNull: false, references:{model: "users", key: 'id'}},
-    package_id : {type: DataTypes.INTEGER, allowNull: false, references: {model: 'packages', key: 'id'}},
-    paid_at: {type: DataTypes.DATE, allowNull: false},
-    expire_at: {type: DataTypes.DATE, allowNull: false},
-    is_confirmed: {type: DataTypes.BOOLEAN, defaultValue: false}
-},{
-    tableName: 'payments',
-    timestamps: true
-}
-
-)
-
-User.hasMany(Payment, {foreignKey: 'user_id'})
-Payment.belongsTo(User, {foreignKey: 'user_id'})
-
-Package.hasMany(Payment, {foreignKey: 'package_id'})
-Payment.belongsTo(Package, {foreignKey: 'package_id'})
-
-module.exports = Payment
+  return Payment;
+};

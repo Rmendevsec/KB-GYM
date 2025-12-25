@@ -1,16 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const qrController = require('../controllers/qr.controller');
 
-const authMiddleware = require('../middlewares/auth.middleware');
+const qrController = require("../controllers/qr.controller");
+const authMiddleware = require("../middlewares/auth.middleware");
 
-router.get('/current', authMiddleware, qrController.getCurrentQR);
-router.post('/regenerate', authMiddleware, qrController.regenerateQR);
+// DEBUG
+console.log("authMiddleware:", typeof authMiddleware);
+console.log("getCurrentQR:", typeof qrController.getCurrentQR);
 
-console.log(authMiddleware.verifyToken);
-console.log(qrController.getCurrentQR); 
-
-// Public endpoint for scanning QR
-router.post('/scan', qrController.scanQR);
+// Routes
+router.get("/current", authMiddleware, qrController.getCurrentQR);
+router.post("/scan", qrController.scanQR);
 
 module.exports = router;

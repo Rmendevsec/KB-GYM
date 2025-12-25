@@ -1,35 +1,74 @@
-  const { User, Role } = require("../models");
-  const { hashPassword, comparePassword } = require("../utils/password");
-  const { generateToken } = require("../utils/jwt");
+const { User, Payment, Package } = require("../models");
+const { hashPassword } = require("../utils/password");
+const { generateToken } = require("../utils/jwt");
+
+// Calculate Sundays between two dates
+const calculateSundays = (start, end) => {
+  let count = 0;
+  const d = new Date(start);
+  while (d <= end) {
+    if (d.getDay() === 0) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
+};
+
+// Calculate allowed scans
+const calculateScans = (months, startDate) => {
+  const end = new Date(startDate);
+  end.setMonth(end.getMonth() + months);
+  return 40 * months + calculateSundays(startDate, end);
+};
 
 const register = async (userData) => {
-  const existingUser = await User.findOne({
-    where: { email: userData.email }
-  });
-  if (existingUser) {
-    throw new Error("User with this email already exists");
+  if (!userData.full_name || !userData.email || !userData.password) {
+    throw new Error("full_name, email, and password are required");
   }
+// Convert months to duration_days (assuming 30 days per month)
+const durationDays = months * 30;
 
+// Fetch package by duration_days
+const selectedPackage = await Package.findOne({ where: { duration_days: durationDays } });
+if (!selectedPackage) throw new Error("Package not found");
 
-  if (!userData.full_name || !userData.email || !userData.password || !userData.role_id) {
-    throw new Error("All fields are required");
-  }
+  const existingUser = await User.findOne({ where: { email: userData.email } });
+  if (existingUser) throw new Error("User with this email already exists");
 
-  // Hash password
   const hashedPassword = await hashPassword(userData.password);
 
-  // Create user 
   const user = await User.create({
-    full_name: userData.full_name,   
+    full_name: userData.full_name,
     email: userData.email,
     password: hashedPassword,
-    role_id: userData.role_id        
+    role_id: userData.role_id || 3,
   });
+
+  if (userData.packageMonths) {
+    const months = Number(userData.packageMonths);
+    const now = new Date();
+    const expireDate = new Date();
+    expireDate.setMonth(expireDate.getMonth() + months);
+
+    const allowedScans = calculateScans(months, now);
+
+    // ✅ Fetch package from Package table
+    const selectedPackage = await Package.findOne({ where: { months } });
+    if (!selectedPackage) throw new Error("Package not found");
+await Payment.create({
+  user_id: user.id,
+  package_id: selectedPackage.id,
+  paid_at: new Date(),
+  expire_at: new Date(Date.now() + selectedPackage.duration_days * 24*60*60*1000),
+  allowed_scans: calculateScans(months, new Date()),
+  is_confirmed: true,
+});
+
+  }
 
   const token = generateToken({
     id: user.id,
     email: user.email,
-    role_id: user.role_id
+    role_id: user.role_id,
   });
 
   return {
@@ -38,58 +77,10 @@ const register = async (userData) => {
       full_name: user.full_name,
       email: user.email,
       role_id: user.role_id,
-      is_active: user.is_active
+      is_active: user.is_active,
     },
-    token
+    token,
   };
 };
 
-
-  const login = async (email, password) => {
-    // Find user with role
-    const user = await User.scope('withPassword').findOne({
-      where: { email },
-      include: [{
-        model: Role,
-        attributes: ['name']
-      }]
-    });
-
-    if (!user) {
-      throw new Error("Invalid email or password");
-    }
-
-    // Check if user is active
-    if (!user.is_active) {
-      throw new Error("Account is deactivated");
-    }
-
-    // Verify password
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid email or password");
-    }
-
-    // Generate token
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.Role.name
-    });
-
-    return {
-      user: {
-        id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        role: user.Role.name,
-        is_active: user.is_active
-      },
-      token
-    };
-  };
-
-  module.exports = {
-    register,
-    login
-  };
+module.exports = { register };

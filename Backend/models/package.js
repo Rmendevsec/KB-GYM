@@ -1,16 +1,14 @@
-const {DataTypes} = require("sequelize")
-const sequelize = require("../config/db.config")
+// models/package.js
+module.exports = (sequelize, DataTypes) => {
+  const Package = sequelize.define("Package", {
+    name: { type: DataTypes.STRING, allowNull: false },
+    duration_days: { type: DataTypes.INTEGER, allowNull: false },
+    price: { type: DataTypes.INTEGER, allowNull: false },
+  });
 
-const Package = new sequelize.define("Package", {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    price: {type: DataTypes.INTEGER, allowNull: false},
-    duration_days: {type: DataTypes.INTEGER, allowNull: false},
-    session_per_week: {type: DataTypes.INTEGER, allowNull: false}
+  Package.associate = (models) => {
+    Package.hasMany(models.Payment, { foreignKey: "package_id" });
+  };
 
-},{
-    tableName: "packages",
-    timestamps: true
-})
-
-module.exports = Package
+  return Package;
+};

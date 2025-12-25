@@ -1,4 +1,3 @@
-// models/scan.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db.config");
 

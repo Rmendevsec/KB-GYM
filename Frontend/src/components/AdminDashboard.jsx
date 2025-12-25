@@ -1,8 +1,12 @@
 import React from 'react'
+import CreateUser from './CreateUser'
 
 function AdminDashboard() {
   return (
-    <div>AdminDashboard</div>
+    <div>AdminDashboard
+
+      <CreateUser />
+    </div>
   )
 }
 
