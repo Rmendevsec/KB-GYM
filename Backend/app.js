@@ -4,6 +4,7 @@ const cors = require("cors");
 // Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+
 const qrRoutes = require('./routes/qr.routes');
 
 
@@ -32,6 +33,13 @@ app.get("/", (req, res) => {
     }
   });
 });
+const packageRoutes = require("./routes/package.routes");
+app.use("/api/packages", packageRoutes);
+
+const adminRoutes = require('./routes/admin.routes');
+
+// ... your other middleware/routes
+app.use('/api/admin', adminRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -1,12 +1,12 @@
 require("dotenv").config();
-const { sequelize, User } = require("./models");
-const { hashPassword } = require("./utils/password");
+const { sequelize, User } = require("../models");
+const { hashPassword } = require("./password");
 
 (async () => {
   try {
     await sequelize.authenticate();
 
-    const email = "cashier@kbgym.com";
+    const email = "admin@kbgym.com";
 
     const existing = await User.findOne({ where: { email } });
     if (existing) {
@@ -20,7 +20,7 @@ const { hashPassword } = require("./utils/password");
       full_name: "System Admin",
       email,
       password,
-      role_id: 2, // ADMIN
+      role_id: 1, // ADMIN
       is_active: true,
     });
 

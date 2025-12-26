@@ -19,22 +19,20 @@ function QRScanner() {
 
     html5QrCode.start(
       { facingMode: "environment" },
-      { fps: 5, qrbox: 300 }, // reduce fps to lower CPU load
+      { fps: 5, qrbox: 300 },
       async (decodedText) => {
-        // Stop scanner immediately to avoid CPU spikes and multiple calls
         await html5QrCode.stop();
         setScannerRunning(false);
 
         try {
           const res = await api.post("/qr/scan", { qrData: decodedText });
-          setScannedUser(res.data.user);
+          setScannedUser(res.data); // store full response, not just user
         } catch (err) {
           const msg = err.response?.data?.message || "QR scan failed";
           alert(`❌ ${msg}`);
         }
       },
       (errorMessage) => {
-        // Ignore NotFoundException to reduce console spam
         if (!errorMessage.includes("NotFoundException")) {
           console.warn("QR Scanner:", errorMessage);
         }
@@ -59,18 +57,57 @@ function QRScanner() {
       <button onClick={startScanner} disabled={scannerRunning}>
         {scannerRunning ? "Scanning..." : "Start Scanner"}
       </button>
-      <button onClick={stopScanner} disabled={!scannerRunning} style={{ marginLeft: "10px" }}>
+      <button
+        onClick={stopScanner}
+        disabled={!scannerRunning}
+        style={{ marginLeft: "10px" }}
+      >
         Stop Scanner
       </button>
 
-      {scannedUser && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>Scan Result</h3>
-          <p>Name: {scannedUser.full_name}</p>
-          <p>Email: {scannedUser.email}</p>
-          <p>Status: {scannedUser.is_valid ? "Valid" : "Expired"}</p>
-        </div>
-      )}
+  {scannedUser && (
+  <div style={{ marginTop: "20px" }}>
+    <h3>Scan Result</h3>
+
+    <p>Status: {scannedUser.valid ? "Valid" : "Invalid / Expired"}</p>
+
+    {scannedUser.user && (
+      <>
+        <p>Name: {scannedUser.user.full_name}</p>
+        <p>Phone: {scannedUser.user.phone_number}</p>
+      </>
+    )}
+
+    {scannedUser.package && (
+      <>
+        <p>Package: {scannedUser.package.name}</p>
+
+        {scannedUser.package.paid_at && (
+          <p>
+            Registered:{" "}
+            {new Date(scannedUser.package.paid_at).toLocaleDateString()}
+          </p>
+        )}
+
+        <p>
+          Expires:{" "}
+          {new Date(scannedUser.package.expire_at).toLocaleDateString()}
+        </p>
+
+        {scannedUser.package.remaining_scans !== null && (
+          <p>Remaining scans: {scannedUser.package.remaining_scans}</p>
+        )}
+      </>
+    )}
+
+    {!scannedUser.valid && (
+      <p style={{ color: "red" }}>
+        ❌ {scannedUser.message}
+      </p>
+    )}
+  </div>
+)}
+
     </div>
   );
 }

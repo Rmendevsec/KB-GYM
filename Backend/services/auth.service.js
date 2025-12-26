@@ -12,6 +12,20 @@ const calculateSundays = (start, end) => {
   }
   return count;
 };
+function calculateAllowedScans(durationDays, startDate) {
+  const months = Math.ceil(durationDays / 30);
+  let sundays = 0;
+  const start = new Date(startDate);
+  const end = new Date(startDate);
+  end.setMonth(end.getMonth() + months);
+
+  const d = new Date(start);
+  while (d <= end) {
+    if (d.getDay() === 0) sundays++;
+    d.setDate(d.getDate() + 1);
+  }
+  return 40 * months + sundays;
+}
 
 // Calculate allowed scans
 const calculateScans = (months, startDate) => {
@@ -19,49 +33,61 @@ const calculateScans = (months, startDate) => {
   end.setMonth(end.getMonth() + months);
   return 40 * months + calculateSundays(startDate, end);
 };
-const login = async (email, password) => {
-  const user = await User.scope("withPassword").findOne({ where: { email } });
-  if (!user) throw new Error("Invalid email or password");
+const login = async (phone_number, password) => {
+  const user = await User.scope("withPassword").findOne({ where: { phone_number } });
+  if (!user) throw new Error("Invalid phone number or password");
 
   const match = await comparePassword(password, user.password);
-  if (!match) throw new Error("Invalid email or password");
+  if (!match) throw new Error("Invalid phone number or password");
 
   const token = generateToken({
     id: user.id,
-    email: user.email,
+    phone_number: user.phone_number,
     role_id: user.role_id,
   });
 
   return { user, token };
 };
+ 
 
 const register = async (userData) => {
-  const { full_name, email, password, role_id, package_id } = userData;
+  const { full_name, phone_number, password, role_id, package_id } = userData;
 
-  if (!full_name || !email || !password || !package_id) {
+  if (!full_name || !phone_number || !password || !package_id) {
     throw new Error("All fields are required");
   }
 
-  const existingUser = await User.findOne({ where: { email } });
+  // check if user exists
+  const existingUser = await User.findOne({ where: { phone_number } });
   if (existingUser) throw new Error("User already exists");
 
+  // get selected package
   const selectedPackage = await Package.findByPk(package_id);
   if (!selectedPackage) throw new Error("Package not found");
 
+  // hash password
   const hashedPassword = await hashPassword(password);
 
-  const user = await User.create({
+  // create user
+  const newUser = await User.create({
     full_name,
-    email,
+    phone_number,
     password: hashedPassword,
     role_id: role_id || 3,
   });
 
-  const weeks = Math.ceil(selectedPackage.duration_days / 7);
-  const allowed_scans = selectedPackage.session_per_week * weeks;
+let allowed_scans;
+
+// 1-month package → limited scans
+if (selectedPackage.duration_days === 30) {
+  allowed_scans = 13; // 13 scans in 40 days
+} else {
+  allowed_scans = -1; // unlimited scans for 3/6/12 months
+}
+
 
   await Payment.create({
-    user_id: user.id,
+    user_id: newUser.id,
     package_id: selectedPackage.id,
     paid_at: new Date(),
     expire_at: new Date(Date.now() + selectedPackage.duration_days * 86400000),
@@ -69,14 +95,16 @@ const register = async (userData) => {
     is_confirmed: true,
   });
 
+  // generate token
   const token = generateToken({
-    id: user.id,
-    email: user.email,
-    role_id: user.role_id,
+    id: newUser.id,
+    phone_number: newUser.phone_number,
+    role_id: newUser.role_id,
   });
 
-  return { user, token };
+  return { user: newUser, token };
 };
+
 
 
 module.exports = { register, login };

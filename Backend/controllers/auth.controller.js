@@ -12,20 +12,18 @@ const registerController = async (req, res) => {
 
 const loginController = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { phone_number, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+    if (!phone_number || !password) {
+      return res.status(400).json({ message: "Phone number and password are required" });
     }
 
-    const result = await authService.login(email, password);
+    const result = await authService.login(phone_number, password);
 
-    // Make sure result has user and token
     if (!result || !result.user || !result.token) {
       return res.status(400).json({ message: "Login failed" });
     }
 
-    // Send a single response
     res.json({
       success: true,
       user: result.user,
@@ -33,7 +31,6 @@ const loginController = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    // Only one response per request
     if (!res.headersSent) {
       res.status(400).json({ message: err.message });
     }

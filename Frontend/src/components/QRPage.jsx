@@ -5,31 +5,56 @@ export default function QRPage() {
   const [qr, setQr] = useState("");
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    // Fetch QR code
-    axios.get("http://localhost:5000/api/qr/current", {
+      // Fetch QR code
+      const qrRes = await axios.get("http://localhost:5000/api/qr/current", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setQr(qrRes.data.qrCode);
+
+      // Fetch user & package info
+      const userRes = await axios.get("http://localhost:5000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(userRes.data.data);
+    } catch (err) {
+      console.error("Error fetching QR/user:", err);
+    }
+  };
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  const fetchQR = async () => {
+    const res = await axios.get("http://localhost:5000/api/qr/current", {
       headers: { Authorization: `Bearer ${token}` },
-    }).then(res => setQr(res.data.qrCode));
+    });
+    setQr(res.data.qrCode);
+  };
 
-    // Fetch user & package info
-    axios.get("http://localhost:5000/api/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(res => setUser(res.data.data));
+  fetchQR(); // initial
 
-  }, []);
+  const interval = setInterval(fetchQR, 10 * 60 * 1000); 
+  return () => clearInterval(interval);
+}, []);
 
   const renderPackageInfo = () => {
-    if (!user?.package) return null;
-    const { name, price, duration_days, remaining_scans } = user.package;
+    if (!user?.Payments?.length) return null;
+
+    const payment = user.Payments[0]; // latest payment
+    const { Package, allowed_scans, used_scans, paid_at, expire_at } = payment;
 
     return (
       <div>
-        <p>Package: {name}</p>
-        <p>Price per month: {price} birr</p>
-        <p>Duration (days): {duration_days}</p>
-        <p>Remaining scans: {remaining_scans}</p>
+        <h3>Membership Info</h3>
+        <p>Package: {Package.name}</p>
+        <p>Registered: {new Date(paid_at).toLocaleDateString()}</p>
+        <p>Expires: {new Date(expire_at).toLocaleDateString()}</p>
+        <p>Scans Used: {used_scans}</p>
+        <p>Remaining Scans: {allowed_scans}</p>
       </div>
     );
   };
