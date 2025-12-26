@@ -65,7 +65,7 @@ function QRScanner() {
         Stop Scanner
       </button>
 
-  {scannedUser && (
+{scannedUser && (
   <div style={{ marginTop: "20px" }}>
     <h3>Scan Result</h3>
 
@@ -73,40 +73,39 @@ function QRScanner() {
 
     {scannedUser.user && (
       <>
-        <p>Name: {scannedUser.user.full_name}</p>
-        <p>Phone: {scannedUser.user.phone_number}</p>
-      </>
-    )}
-
-    {scannedUser.package && (
-      <>
-        <p>Package: {scannedUser.package.name}</p>
-
-        {scannedUser.package.paid_at && (
-          <p>
-            Registered:{" "}
-            {new Date(scannedUser.package.paid_at).toLocaleDateString()}
-          </p>
-        )}
-
+        <p>Name: {scannedUser.user.full_name || "N/A"}</p>
+        <p>Phone: {scannedUser.user.phone_number || "N/A"}</p>
         <p>
-          Expires:{" "}
-          {new Date(scannedUser.package.expire_at).toLocaleDateString()}
+          Registered:{" "}
+          {scannedUser.user.registered_at
+            ? new Date(scannedUser.user.registered_at).toLocaleDateString()
+            : "N/A"}
         </p>
-
-        {scannedUser.package.remaining_scans !== null && (
-          <p>Remaining scans: {scannedUser.package.remaining_scans}</p>
-        )}
       </>
     )}
+
+    <p>Package: {scannedUser.package?.name || "N/A"}</p>
+
+    <p>
+      Expires:{" "}
+      {scannedUser.package?.expire_at
+        ? new Date(scannedUser.package.expire_at).toLocaleDateString()
+        : "N/A"}
+    </p>
+
+    <p>
+      Remaining scans:{" "}
+      {scannedUser.package?.remaining_scans != null
+        ? scannedUser.package.remaining_scans
+        : 0}
+    </p>
 
     {!scannedUser.valid && (
-      <p style={{ color: "red" }}>
-        ❌ {scannedUser.message}
-      </p>
+      <p style={{ color: "red" }}>❌ {scannedUser.message}</p>
     )}
   </div>
 )}
+
 
     </div>
   );

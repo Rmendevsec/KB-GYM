@@ -48,35 +48,44 @@ function AdminDashboard() {
                 <th>Remaining Scans</th>
               </tr>
             </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.full_name}</td>
-                  <td>{u.phone_number}</td>
-                  <td>
-                    {u.role_id === 1
-                      ? 'Admin'
-                      : u.role_id === 2
-                      ? 'Cashier'
-                      : 'Member'}
-                  </td>
-                  <td>{u.is_active ? 'Yes' : 'No'}</td>
-                  <td>{u.package?.name || 'N/A'}</td>
-                  <td>
-                    {u.created_at
-                      ? new Date(u.created_at).toLocaleDateString()
-                      : 'N/A'}
-                  </td>
-                  <td>
-                    {u.expire_at
-                      ? new Date(u.expire_at).toLocaleDateString()
-                      : 'N/A'}
-                  </td>
-                  <td>{u.used_scans || 0}</td>
-                </tr>
-              ))}
-            </tbody>
+<tbody>
+  {users.map((u) => {
+    const pkg = u.package; // directly get the package
+    const remainingScans =
+      pkg?.max_scans != null
+        ? Math.max((pkg.max_scans || 0) - (u.used_scans || 0), 0)
+        : "Unlimited";
+
+    return (
+      <tr key={u.id}>
+        <td>{u.id}</td>
+        <td>{u.full_name}</td>
+        <td>{u.phone_number}</td>
+        <td>
+          {u.role_id === 1
+            ? "Admin"
+            : u.role_id === 2
+            ? "Cashier"
+            : "Member"}
+        </td>
+        <td>{u.is_active ? "Yes" : "No"}</td>
+        <td>{pkg?.name || "N/A"}</td>
+        <td>
+          {u.created_at
+            ? new Date(u.created_at).toLocaleDateString()
+            : "N/A"}
+        </td>
+        <td>
+          {u.expire_at
+            ? new Date(u.expire_at).toLocaleDateString()
+            : "N/A"}
+        </td>
+        <td>{remainingScans}</td>
+      </tr>
+    );
+  })}
+</tbody>
+
           </table>
         )}
       </div>
