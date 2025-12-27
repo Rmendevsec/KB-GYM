@@ -17,7 +17,6 @@ export default function CreateUser() {
     const fetchPackages = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/packages");
-        // console.log("PACKAGES ", res.data);
         setPackages(res.data);
       } catch (err) {
         console.error(err);

@@ -7,10 +7,9 @@ const { getAllUsers } = require('../controllers/admin.controller');
 const { getMe } = require("../controllers/user.controller");
 
 router.get('/users', authMiddleware, getAllUsers);
-// GET /api/users/me - Get current user profile
+
 router.get("/me", authMiddleware, getMe);
 
-// GET /api/users - Get all users (admin only)
 router.get("/", authMiddleware, roleMiddleware('admin'), userController.getAllUsers);
 
 module.exports = router;

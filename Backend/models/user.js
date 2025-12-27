@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db.config");
+const Package = require("./package"); // make sure this path is correct
 
 const User = sequelize.define("User", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -20,6 +21,7 @@ const User = sequelize.define("User", {
   defaultScope: { attributes: { exclude: ["password"] } },
   scopes: { withPassword: { attributes: { include: ["password"] } } }
 });
+
 
 
 module.exports = User;

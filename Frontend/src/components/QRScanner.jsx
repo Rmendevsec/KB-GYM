@@ -26,10 +26,10 @@ function QRScanner() {
 
         try {
           const res = await api.post("/qr/scan", { qrData: decodedText });
-          setScannedUser(res.data); // store full response, not just user
+          setScannedUser(res.data); 
         } catch (err) {
           const msg = err.response?.data?.message || "QR scan failed";
-          alert(`❌ ${msg}`);
+          alert(`${msg}`);
         }
       },
       (errorMessage) => {
@@ -65,48 +65,48 @@ function QRScanner() {
         Stop Scanner
       </button>
 
-{scannedUser && (
-  <div style={{ marginTop: "20px" }}>
-    <h3>Scan Result</h3>
+      {scannedUser && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Scan Result</h3>
 
-    <p>Status: {scannedUser.valid ? "Valid" : "Invalid / Expired"}</p>
+          <p>Status: {scannedUser.valid ? "Valid" : "Invalid / Expired"}</p>
 
-    {scannedUser.user && (
-      <>
-        <p>Name: {scannedUser.user.full_name || "N/A"}</p>
-        <p>Phone: {scannedUser.user.phone_number || "N/A"}</p>
-        <p>
-          Registered:{" "}
-          {scannedUser.user.registered_at
-            ? new Date(scannedUser.user.registered_at).toLocaleDateString()
-            : "N/A"}
-        </p>
-      </>
-    )}
+          {scannedUser.user && (
+            <>
+              <p>Name: {scannedUser.user.full_name || "N/A"}</p>
+              <p>Phone: {scannedUser.user.phone_number || "N/A"}</p>
+              <p>
+                Registered:{" "}
+                {scannedUser.user.registered_at
+                  ? new Date(
+                      scannedUser.user.registered_at
+                    ).toLocaleDateString()
+                  : "N/A"}
+              </p>
+            </>
+          )}
 
-    <p>Package: {scannedUser.package?.name || "N/A"}</p>
+          <p>Package: {scannedUser.package?.name || "N/A"}</p>
 
-    <p>
-      Expires:{" "}
-      {scannedUser.package?.expire_at
-        ? new Date(scannedUser.package.expire_at).toLocaleDateString()
-        : "N/A"}
-    </p>
+          <p>
+            Expires:{" "}
+            {scannedUser.package?.expire_at
+              ? new Date(scannedUser.package.expire_at).toLocaleDateString()
+              : "N/A"}
+          </p>
 
-    <p>
-      Remaining scans:{" "}
-      {scannedUser.package?.remaining_scans != null
-        ? scannedUser.package.remaining_scans
-        : 0}
-    </p>
+          <p>
+            Remaining scans:{" "}
+            {scannedUser.package?.remaining_scans != null
+              ? scannedUser.package.remaining_scans
+              : 0}
+          </p>
 
-    {!scannedUser.valid && (
-      <p style={{ color: "red" }}>❌ {scannedUser.message}</p>
-    )}
-  </div>
-)}
-
-
+          {!scannedUser.valid && (
+            <p style={{ color: "red" }}> {scannedUser.message}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -11,7 +11,7 @@ const generateQRCode = async (user) => {
   return QRCode.toDataURL(qrData);
 };
 
-// GET /api/qr/current
+
 const getCurrentQR = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -44,7 +44,7 @@ const getCurrentQR = async (req, res) => {
   }
 };
 
-// POST /api/qr/scan
+
 const scanQR = async (req, res) => {
   const { qrData } = req.body;
   if (!qrData) return res.status(400).json({ message: "QR required" });
@@ -103,6 +103,7 @@ const scanQR = async (req, res) => {
       user: {
         full_name: user.full_name,
         phone_number: user.phone_number,
+        registered_at: user.registered_at, 
       },
       package: {
         name: user.package?.name || "N/A",

@@ -8,7 +8,7 @@ const Package = sequelize.define("Package", {
 
   max_scans: {
     type: DataTypes.INTEGER,
-    allowNull: true, // null = unlimited
+    allowNull: true, 
   },
 
   price: { type: DataTypes.INTEGER, allowNull: false },

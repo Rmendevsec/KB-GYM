@@ -13,14 +13,14 @@ User.belongsTo(Role, { foreignKey: "role_id" });
 User.hasMany(Scan, { foreignKey: "user_id" });
 Scan.belongsTo(User, { foreignKey: "user_id" });
 
-// Package (directly, no Payment)
-User.belongsTo(Package, {
-  foreignKey: 'package_id',
-  as: 'package' // lowercase alias
-});
+
 Package.hasMany(User, {
   foreignKey: 'package_id',
   as: 'users'
+});
+User.belongsTo(Package, {
+  foreignKey: 'package_id',
+  as: 'package' 
 });
 
 

@@ -2,7 +2,6 @@ const { User,  Package } = require("../models");
 const { generateToken } = require("../utils/jwt");
 const { hashPassword, comparePassword } = require("../utils/password");
 
-// Calculate Sundays between two dates
 const calculateSundays = (start, end) => {
   let count = 0;
   const d = new Date(start);
@@ -27,7 +26,6 @@ function calculateAllowedScans(durationDays, startDate) {
   return 40 * months + sundays;
 }
 
-// Calculate allowed scans
 const calculateScans = (months, startDate) => {
   const end = new Date(startDate);
   end.setMonth(end.getMonth() + months);
@@ -70,7 +68,9 @@ const register = async (userData) => {
     if (!selectedPackage) throw new Error("Package not found");
 
     expire_at = new Date(Date.now() + selectedPackage.duration_days * 86400000);
-    allowed_scans = selectedPackage.max_scans || null;
+
+    // If 1 month package → 13 scans, else unlimited
+    allowed_scans = selectedPackage.duration_days === 30 ? 13 : null;
   }
 
   const newUser = await User.create({
@@ -82,6 +82,7 @@ const register = async (userData) => {
     expire_at,
     used_scans: 0,
     package_id: package_id || null,
+    remaining_scans: allowed_scans, // store remaining scans
   });
 
   const token = generateToken({
@@ -92,6 +93,7 @@ const register = async (userData) => {
 
   return { user: newUser, token };
 };
+
 
 
 

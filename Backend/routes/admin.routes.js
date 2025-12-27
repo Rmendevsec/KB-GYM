@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getAllUsers } = require('../controllers/admin.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
-const adminMiddleware = require('../middlewares/admin.middleware'); // check if user is admin
+const userController = require("../controllers/user.controller");
 
-router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
+router.get("/users", userController.getAllUsers);
+
+router.get("/test-query", userController.testDirectQuery);
 
 module.exports = router;

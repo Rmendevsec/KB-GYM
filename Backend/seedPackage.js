@@ -31,7 +31,7 @@ const seedPackages = async () => {
     }
   ]);
 
-  console.log("✅ Packages seeded");
+  console.log("Packages seeded");
 };
 
 module.exports = seedPackages;

@@ -13,7 +13,6 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        {/* Admin routes */}
         <Route
           path="/admin/dashboard"
           element={
@@ -31,7 +30,6 @@ function App() {
           }
         />
 
-        {/* Cashier routes */}
         <Route
           path="/scan"
           element={
@@ -41,7 +39,6 @@ function App() {
           }
         />
 
-        {/* Member routes */}
         <Route
           path="/qr"
           element={

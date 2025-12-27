@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-// Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 
@@ -17,7 +16,6 @@ app.use(cors()); // allows any origin
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/qr', qrRoutes);
-// Health check
 app.get("/", (req, res) => {
   res.json({
     message: "KB Gym API",
@@ -38,15 +36,12 @@ app.use("/api/packages", packageRoutes);
 
 const adminRoutes = require('./routes/admin.routes');
 
-// ... your other middleware/routes
 app.use('/api/admin', adminRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error("Error:", err.message);
   res.status(err.status || 500).json({
